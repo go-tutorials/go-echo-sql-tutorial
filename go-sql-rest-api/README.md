@@ -3,13 +3,24 @@
 ## How to run
 #### Clone the repository
 ```shell
-git clone https://github.com/go-tutorials/go-sql-rest-api.git
-cd go-sql-rest-api
+git clone https://github.com/go-tutorials/go-echo-postgresql-rest-api.git
 ```
 
 #### To run the application
 ```shell
 go run main.go
+```
+
+## Database
+#### How to create a cloud postgreSQL database with ElephantSQL
+- create database document: https://www.elephantsql.com/docs/ (Note: use file data.sql (go-sql-rest-api -> data -> data.sql) to get the sql query to create new database) 
+- get URI link for the app to connect: choose instance database you want to use, click "Details" in the left column. Then copy the URL in the "Details" section
+- use URI in code: go to go-sql-rest-api -> configs -> config.yml. Then paste the URI above to the sql.data_source_name
+
+#### get Echo Framework
+```shell
+go get github.com/labstack/echo/v4
+go get github.com/labstack/echo/v4/middleware
 ```
 
 ## API Design
