@@ -1,0 +1,5 @@
+[
+    {"id": "ironman", "username": "tony.stark", "email": "tony.stark@gmail.com", "phone": "0987654321", "dateOfBirth": "1963-03-25T00:00:00+07:00"},
+    {"id": "spiderman", "username": "peter.parker", "email": "peter.parker@gmail.com", "phone": "0987654321", "dateOfBirth": "1962-08-25T00:00:00+07:00"},
+    {"id": "wolverine", "username": "james.howlett", "email": "james.howlett@gmail.com", "phone": "0987654321", "dateOfBirth": "1974-11-16T00:00:00+07:00"}
+]
