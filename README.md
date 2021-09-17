@@ -14,9 +14,9 @@ go run main.go
 
 ## Database
 #### How to create a cloud postgreSQL database with ElephantSQL
-- create database document: https://www.elephantsql.com/docs/ (Note: use file data.sql (go-sql-rest-api -> data -> data.sql) to get the sql query to create new database) 
+- create database document: https://www.elephantsql.com/docs/ (Note: use file data.sql (data -> data.sql) to get the sql query to create new database) 
 - get URI link for the app to connect: choose the instance database you want to use after created in ElephantSQL, click "Details" option in the left column. Then copy the URL in the "Details" section
-- use URI in code: go to go-sql-rest-api -> configs -> config.yml. Then paste the URI above to the sql.data_source_name
+- use URI in code: configs -> config.yml. Then paste the URI above to the sql.data_source_name
 
 ## Echo Framework
 #### get Echo Framework
