@@ -144,10 +144,3 @@ func (h *UserHandler) Delete(c echo.Context) error {
 	msg := fmt.Sprintf("user with id '%s' has been removed", id)
 	return c.JSON(http.StatusOK, msg)
 }
-
-// func respond(w http.ResponseWriter, result interface{}) {
-// 	response, _ := json.Marshal(result)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(http.StatusOK)
-// 	w.Write(response)
-// }
