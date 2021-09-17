@@ -1,0 +1,20 @@
+server:
+  name: go-sql-rest-api
+  port: 8080
+
+sql:
+  driver: postgres
+  data_source_name: postgres://qtqyqrzg:4-fPQ7h10SZk3d6_AkaxSGZ5AjZ6RdWO@satao.db.elephantsql.com/qtqyqrzg
+
+log:
+  level: info
+  map:
+    time: "@timestamp"
+    msg: message
+
+middleware:
+  log: true
+  skips: /health
+  request: request
+  response: response
+  size: size
