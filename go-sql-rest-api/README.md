@@ -164,8 +164,8 @@ To create health checker, and health handler
 
 To handler routing
 ```go
-    r := mux.NewRouter()
-    r.HandleFunc("/health", healthHandler.Check).Methods("GET")
+    e := echo.New()	
+    e.GET("/health", app.HealthHandler.Check)
 ```
 
 ### core-go/config
@@ -209,10 +209,6 @@ import (
 
 func main() {
 	var conf app.Root
-	er1 := config.Load(&conf, "configs/config")
-	if er1 != nil {
-		panic(er1)
-	}
 
 	e := echo.New()
 
@@ -225,12 +221,6 @@ func main() {
 		Format: "host=${host}, method=${method}, uri=${uri}, status=${status}, error=${error}, message=${message}\n",
 	}))
 	e.Use(middleware.Recover())
-
-	er2 := app.Route(e, context.Background(), conf)
-	if er2 != nil {
-		panic(er2)
-	}
-	e.Logger.Fatal(e.Start(sv.Addr(conf.Server.Port)))
 }
 ```
 To configure to ignore the health check, use "skips":
