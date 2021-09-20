@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/core-go/config"
+	"github.com/core-go/log"
 	sv "github.com/core-go/service"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
 	"go-service/internal/app"
+	lg "go-service/pkg/log"
 )
 
 func main() {
@@ -21,14 +22,18 @@ func main() {
 
 	e := echo.New()
 
-	e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
-		fmt.Printf("Request Body: %v\n", string(reqBody))
-		fmt.Printf("Response Body: %v\n", string(resBody))
-		fmt.Printf("----------------------------------------\n")
-	}))
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "host=${host}, method=${method}, uri=${uri}, status=${status}, error=${error}, message=${message}\n",
-	}))
+	log.Initialize(conf.Log)
+	logger := lg.NewLogger(conf.MiddleWare, log.InfoFields)
+	e.Use(middleware.BodyDump(logger.Log))
+
+	// e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
+	// 	fmt.Printf("Request Body: %v\n", string(reqBody))
+	// 	fmt.Printf("Response Body: %v\n", string(resBody))
+	// 	fmt.Printf("----------------------------------------\n")
+	// }))
+	// e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+	// 	Format: "host=${host}, method=${method}, uri=${uri}, status=${status}, error=${error}, message=${message}\n",
+	// }))
 	e.Use(middleware.Recover())
 
 	er2 := app.Route(e, context.Background(), conf)
