@@ -1,24 +1,36 @@
 package middleware
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
+
+type Fields map[string]interface{}
 
 type Logger struct {
 	Config  LogConfig
 	LogInfo func(ctx context.Context, msg string, fields map[string]interface{})
 }
 
+type ResponseWriter struct {
+	http.ResponseWriter
+	Body *bytes.Buffer
+}
+
 func NewLogger(c LogConfig, log func(ctx context.Context, msg string, fields map[string]interface{})) *Logger {
 	return &Logger{c, log}
 }
+
 func (l *Logger) Log(ctx echo.Context, reqBody, resBody []byte) {
 	msg := ctx.Request().Method + " " + ctx.Request().RequestURI
 	Log(ctx, msg, reqBody, resBody, l.Config, l.LogInfo)
+	fmt.Println("_____________________________")
 }
 
 func Log(ctx echo.Context, msg string, reqBody, resBody []byte, c LogConfig, log func(ctx context.Context, msg string, fields map[string]interface{})) {
@@ -34,18 +46,18 @@ func Log(ctx echo.Context, msg string, reqBody, resBody []byte, c LogConfig, log
 		if len(c.ResponseStatus) > 0 {
 			fields[c.ResponseStatus] = ctx.Response().Status
 		}
-		/*
-			if len(fieldConfig.Duration) > 0 {
-				t2 := time.Now()
-				duration := t2.Sub(t1)
-				fields[fieldConfig.Duration] = duration.Milliseconds()
-			}*/
+		// if len(fieldConfig.Duration) > 0 {
+		// 	t2 := time.Now()
+		// 	duration := t2.Sub(t1)
+		// 	fields[fieldConfig.Duration] = duration.Milliseconds()
+		// }
 		if len(c.Size) > 0 {
 			fields[c.Size] = len(resBody)
 		}
 		log(req.Context(), msg, fields)
 	}
 }
+
 func BuildLogFields(c LogConfig, r *http.Request) map[string]interface{} {
 	fields := make(map[string]interface{}, 0)
 	if !c.Build {
@@ -107,4 +119,38 @@ func GetReqID(ctx context.Context) string {
 		return reqID
 	}
 	return ""
+}
+
+// customized response logging echo middleware
+func LoggerEcho(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		start := time.Now()
+		var path string
+		var method string
+		var brw *ResponseWriter
+		path = c.Request().URL.Path
+		method = c.Request().Method
+
+		// get request body
+		reader, ctx := GetRequestBody(c.Request().Context(), c.Request().Body)
+		c.SetRequest(c.Request().WithContext(ctx))
+		c.Request().Body = reader
+		brw = NewResponseWriter(c.Response().Writer)
+		c.Response().Writer = brw
+
+		err := next(c)
+
+		// get response data
+		GetResponseData(c.Request().Context(), path, method, c.Response().Status, start, brw)
+		return err
+	}
+}
+
+func (w ResponseWriter) Write(b []byte) (int, error) {
+	w.Body.Write(b)
+	return w.ResponseWriter.Write(b)
+}
+
+func NewResponseWriter(rw http.ResponseWriter) *ResponseWriter {
+	return &ResponseWriter{Body: bytes.NewBufferString(""), ResponseWriter: rw}
 }
