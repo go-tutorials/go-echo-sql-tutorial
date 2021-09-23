@@ -23,17 +23,9 @@ func main() {
 	e := echo.New()
 
 	log.Initialize(conf.Log)
-	logger := lg.NewLogger(conf.MiddleWare, log.InfoFields)
-	e.Use(middleware.BodyDump(logger.Log))
-
-	// e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
-	// 	fmt.Printf("Request Body: %v\n", string(reqBody))
-	// 	fmt.Printf("Response Body: %v\n", string(resBody))
-	// 	fmt.Printf("----------------------------------------\n")
-	// }))
-	// e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-	// 	Format: "host=${host}, method=${method}, uri=${uri}, status=${status}, error=${error}, message=${message}\n",
-	// }))
+	// logger := lg.NewLogger(conf.MiddleWare, log.InfoFields)
+	// e.Use(middleware.BodyDump(logger.Log))
+	e.Use(lg.LoggerEcho)
 	e.Use(middleware.Recover())
 
 	er2 := app.Route(e, context.Background(), conf)
