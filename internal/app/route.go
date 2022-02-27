@@ -2,20 +2,11 @@ package app
 
 import (
 	"context"
-
 	"github.com/labstack/echo/v4"
 )
 
-const (
-	GET    = "GET"
-	POST   = "POST"
-	PUT    = "PUT"
-	PATCH  = "PATCH"
-	DELETE = "DELETE"
-)
-
-func Route(e *echo.Echo, ctx context.Context, root Root) error {
-	app, err := NewApp(ctx, root)
+func Route(e *echo.Echo, ctx context.Context, config Config) error {
+	app, err := NewApp(ctx, config)
 	if err != nil {
 		return err
 	}

@@ -2,44 +2,31 @@ package app
 
 import (
 	"context"
-
-	"github.com/core-go/health"
+	"github.com/core-go/health/echo"
 	s "github.com/core-go/health/sql"
 	"github.com/core-go/sql"
 	_ "github.com/lib/pq"
 
-	"go-service/internal/handlers"
-	"go-service/internal/services"
-)
-
-const (
-	CreateTable = `
-create table if not exists users (
-  id varchar(40) not null,
-  username varchar(120),
-  email varchar(120),
-  phone varchar(45),
-  date_of_birth date,
-  primary key (id)
-)`
+	"go-service/internal/handler"
+	"go-service/internal/service"
 )
 
 type ApplicationContext struct {
-	HealthHandler *health.Handler
-	UserHandler   *handlers.UserHandler
+	HealthHandler *echo.Handler
+	UserHandler   *handler.UserHandler
 }
 
-func NewApp(context context.Context, root Root) (*ApplicationContext, error) {
-	db, err := sql.OpenByConfig(root.Sql)
+func NewApp(ctx context.Context, config Config) (*ApplicationContext, error) {
+	db, err := sql.OpenByConfig(config.Sql)
 	if err != nil {
 		return nil, err
 	}
 
-	userService := services.NewUserService(db)
-	userHandler := handlers.NewUserHandler(userService)
+	userService := service.NewUserService(db)
+	userHandler := handler.NewUserHandler(userService)
 
 	sqlChecker := s.NewHealthChecker(db)
-	healthHandler := health.NewHandler(sqlChecker)
+	healthHandler := echo.NewHandler(sqlChecker)
 
 	return &ApplicationContext{
 		HealthHandler: healthHandler,
