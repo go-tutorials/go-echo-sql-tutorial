@@ -1,11 +1,8 @@
 package handler
 
 import (
-	"context"
-	"fmt"
 	sv "github.com/core-go/service"
 	"github.com/labstack/echo/v4"
-	"log"
 	"net/http"
 	"reflect"
 
@@ -22,100 +19,94 @@ func NewUserHandler(service UserService) *UserHandler {
 }
 
 func (h *UserHandler) GetAll(c echo.Context) error {
-	result, err := h.service.GetAll(context.Background())
+	res, err := h.service.All(c.Request().Context())
 	if err != nil {
-		c.Error(err)
-		return nil
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, result)
+	return c.JSON(http.StatusOK, res)
 }
 
 func (h *UserHandler) Load(c echo.Context) error {
 	id := c.Param("id")
 	if len(id) == 0 {
-		log.Fatalf("user id cannot be empty")
+		return c.String(http.StatusBadRequest, "Id cannot be empty")
 	}
 
-	result, err := h.service.Load(context.Background(), id)
+	res, err := h.service.Load(c.Request().Context(), id)
 	if err != nil {
-		c.Error(err)
-		return nil
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, result)
+	return c.JSON(http.StatusOK, res)
 }
 
 func (h *UserHandler) Insert(c echo.Context) error {
 	var user User
 	er1 := c.Bind(&user)
+
 	defer c.Request().Body.Close()
 	if er1 != nil {
-		c.Error(er1)
-		return nil
+		return c.String(http.StatusInternalServerError, er1.Error())
 	}
 
-	_, er2 := h.service.Insert(context.Background(), &user)
+	res, er2 := h.service.Insert(c.Request().Context(), &user)
 	if er2 != nil {
-		c.Error(er2)
-		return nil
+		return c.String(http.StatusInternalServerError, er2.Error())
 	}
-
-	msg := fmt.Sprintf("new user with id '%s' has been created", user.Id)
-	return c.JSON(http.StatusCreated, msg)
+	return c.JSON(http.StatusCreated, res)
 }
 
 func (h *UserHandler) Update(c echo.Context) error {
 	var user User
 	er1 := c.Bind(&user)
 	defer c.Request().Body.Close()
+
 	if er1 != nil {
-		c.Error(er1)
-		return nil
+		return c.String(http.StatusInternalServerError, er1.Error())
 	}
+
 	id := c.Param("id")
 	if len(id) == 0 {
-		log.Fatalf("user id cannot be empty")
-		return nil
+		return c.String(http.StatusBadRequest, "Id cannot be empty")
 	}
+
 	if len(user.Id) == 0 {
 		user.Id = id
 	} else if id != user.Id {
-		log.Fatalf("user id is not match")
-		return nil
+		return c.String(http.StatusBadRequest, "Id not match")
 	}
 
-	_, er2 := h.service.Update(context.Background(), &user)
+	res, er2 := h.service.Update(c.Request().Context(), &user)
 	if er2 != nil {
-		c.Error(er2)
-		return nil
+		return c.String(http.StatusInternalServerError, er2.Error())
 	}
-
-	msg := fmt.Sprintf("user with id '%s' has been updated", id)
-	return c.JSON(http.StatusOK, msg)
+	return c.JSON(http.StatusOK, res)
 }
 
 func (h *UserHandler) Patch(c echo.Context) error {
 	id := c.Param("id")
 	if len(id) == 0 {
-		log.Fatalf("user id cannot be empty")
-		return nil
+		return c.String(http.StatusBadRequest, "Id cannot be empty")
 	}
 
 	r := c.Request()
 	var user User
 	userType := reflect.TypeOf(user)
 	_, jsonMap, _ := sv.BuildMapField(userType)
-	body, _ := sv.BuildMapAndStruct(r, &user)
+	body, er0 := sv.BuildMapAndStruct(r, &user)
+	if er0 != nil {
+		return c.String(http.StatusInternalServerError, er0.Error())
+	}
 	if len(user.Id) == 0 {
 		user.Id = id
 	} else if id != user.Id {
 		return c.String(http.StatusBadRequest, "Id not match")
 	}
-	json, er1 := sv.BodyToJsonMap(c.Request(), user, body, []string{"id"}, jsonMap)
+	json, er1 := sv.BodyToJsonMap(r, user, body, []string{"id"}, jsonMap)
 	if er1 != nil {
 		return c.String(http.StatusInternalServerError, er1.Error())
 	}
 
-	res, er2 := h.service.Patch(context.Background(), json)
+	res, er2 := h.service.Patch(c.Request().Context(), json)
 	if er2 != nil {
 		return c.String(http.StatusInternalServerError, er2.Error())
 	}
@@ -125,15 +116,12 @@ func (h *UserHandler) Patch(c echo.Context) error {
 func (h *UserHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if len(id) == 0 {
-		log.Fatalf("user id cannot be empty")
-		return nil
-	}
-	_, err := h.service.Delete(context.Background(), id)
-	if err != nil {
-		c.Error(err)
-		return nil
+		return c.String(http.StatusBadRequest, "Id cannot be empty")
 	}
 
-	msg := fmt.Sprintf("user with id '%s' has been removed", id)
-	return c.JSON(http.StatusOK, msg)
+	res, err := h.service.Delete(c.Request().Context(), id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, res)
 }
