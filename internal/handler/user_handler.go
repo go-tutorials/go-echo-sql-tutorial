@@ -106,7 +106,7 @@ func (h *UserHandler) Patch(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, er1.Error())
 	}
 
-	res, er2 := h.service.Patch(c.Request().Context(), json)
+	res, er2 := h.service.Patch(r.Context(), json)
 	if er2 != nil {
 		return c.String(http.StatusInternalServerError, er2.Error())
 	}
