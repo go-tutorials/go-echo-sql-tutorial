@@ -201,7 +201,7 @@ import (
 	"fmt"
 
 	"github.com/core-go/config"
-	sv "github.com/core-go/service"
+	sv "github.com/core-go/core"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 

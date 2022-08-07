@@ -1,156 +1,153 @@
-package middleware
+package echo
 
 import (
 	"bytes"
 	"context"
-	"fmt"
-	"net"
-	"net/http"
-	"time"
-
+	"encoding/json"
 	"github.com/labstack/echo/v4"
+	"io/ioutil"
+	"strings"
+	"time"
 )
 
 type Fields map[string]interface{}
 
-type Logger struct {
+type EchoLogger struct {
 	Config  LogConfig
 	LogInfo func(ctx context.Context, msg string, fields map[string]interface{})
+	f       Formatter
+	Mask    func(fieldName, s string) string
 }
 
-type ResponseWriter struct {
-	http.ResponseWriter
-	Body *bytes.Buffer
+func NewEchoLogger(c LogConfig, logInfo func(ctx context.Context, msg string, fields map[string]interface{}), mask func(fieldName, s string) string) *EchoLogger {
+	logger := NewLogger()
+	return &EchoLogger{c, logInfo, logger, mask}
 }
 
-func NewLogger(c LogConfig, log func(ctx context.Context, msg string, fields map[string]interface{})) *Logger {
-	return &Logger{c, log}
-}
-
-func (l *Logger) Log(ctx echo.Context, reqBody, resBody []byte) {
-	msg := ctx.Request().Method + " " + ctx.Request().RequestURI
-	Log(ctx, msg, reqBody, resBody, l.Config, l.LogInfo)
-	fmt.Println("_____________________________")
-}
-
-func Log(ctx echo.Context, msg string, reqBody, resBody []byte, c LogConfig, log func(ctx context.Context, msg string, fields map[string]interface{})) {
-	if c.Log {
-		req := ctx.Request()
-		fields := BuildLogFields(c, ctx.Request())
-		if len(c.Request) > 0 && len(reqBody) > 0 && req.Method != "GET" && req.Method != "DELETE" {
-			fields[c.Request] = string(reqBody)
-		}
-		if len(c.Response) > 0 {
-			fields[c.Response] = string(resBody)
-		}
-		if len(c.ResponseStatus) > 0 {
-			fields[c.ResponseStatus] = ctx.Response().Status
-		}
-		// if len(fieldConfig.Duration) > 0 {
-		// 	t2 := time.Now()
-		// 	duration := t2.Sub(t1)
-		// 	fields[fieldConfig.Duration] = duration.Milliseconds()
-		// }
-		if len(c.Size) > 0 {
-			fields[c.Size] = len(resBody)
-		}
-		log(req.Context(), msg, fields)
-	}
-}
-
-func BuildLogFields(c LogConfig, r *http.Request) map[string]interface{} {
-	fields := make(map[string]interface{}, 0)
-	if !c.Build {
-		return fields
-	}
-	scheme := "http"
-	if r.TLS != nil {
-		scheme = "https"
-	}
-	if len(c.Uri) > 0 {
-		fields[c.Uri] = r.RequestURI
-	}
-
-	if len(c.ReqId) > 0 {
-		if reqID := GetReqID(r.Context()); reqID != "" {
-			fields[c.ReqId] = reqID
-		}
-	}
-	if len(c.Scheme) > 0 {
-		fields[c.Scheme] = scheme
-	}
-	if len(c.Proto) > 0 {
-		fields[c.Proto] = r.Proto
-	}
-	if len(c.UserAgent) > 0 {
-		fields[c.UserAgent] = r.UserAgent()
-	}
-	if len(c.RemoteAddr) > 0 {
-		fields[c.RemoteAddr] = r.RemoteAddr
-	}
-	if len(c.Method) > 0 {
-		fields[c.Method] = r.Method
-	}
-	if len(c.RemoteIp) > 0 {
-		remoteIP := getRemoteIp(r)
-		fields[c.RemoteIp] = remoteIP
-	}
-	return fields
-}
-func getRemoteIp(r *http.Request) string {
-	remoteIP, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		remoteIP = r.RemoteAddr
-	}
-	return remoteIP
-}
-
-type ctxKeyRequestID int
-
-const RequestIDKey ctxKeyRequestID = 0
-
-// GetReqID returns a request ID from the given context if one is present.
-// Returns the empty string if a request ID cannot be found.
-func GetReqID(ctx context.Context) string {
-	if ctx == nil {
-		return ""
-	}
-	if reqID, ok := ctx.Value(RequestIDKey).(string); ok {
-		return reqID
-	}
-	return ""
-}
-
-// customized response logging echo middleware
-func LoggerEcho(next echo.HandlerFunc) echo.HandlerFunc {
+func (l *EchoLogger) Logger(next echo.HandlerFunc) echo.HandlerFunc {
+	InitializeFieldConfig(l.Config)
 	return func(c echo.Context) error {
-		start := time.Now()
-		var path string
-		var method string
-		var brw *ResponseWriter
-		path = c.Request().URL.Path
-		method = c.Request().Method
+		if !fieldConfig.Log || InSkipList(c.Request(), fieldConfig.Skips) {
+			return next(c)
+		} else {
+			r := c.Request()
+			dw := NewResponseWriter(c.Response().Writer)
+			ww := NewWrapResponseWriter(dw, r.ProtoMajor)
+			startTime := time.Now()
+			fields := BuildLogFields(l.Config, r)
+			single := !l.Config.Separate
+			if r.Method == "GET" || r.Method == "DELETE" {
+				single = true
+			}
 
-		// get request body
-		reader, ctx := GetRequestBody(c.Request().Context(), c.Request().Body)
-		c.SetRequest(c.Request().WithContext(ctx))
-		c.Request().Body = reader
-		brw = NewResponseWriter(c.Response().Writer)
-		c.Response().Writer = brw
-
-		err := next(c)
-
-		// get response data
-		GetResponseData(c.Request().Context(), path, method, c.Response().Status, start, brw)
-		return err
+			l.f.LogRequest(l.LogInfo, r, l.Config, fields, single)
+			c.Response().Writer = ww
+			defer func() {
+				if single {
+					l.f.LogResponse(l.LogInfo, r, ww, l.Config, startTime, dw.Body.String(), fields, single)
+				} else {
+					resLogFields := BuildLogFields(l.Config, r)
+					l.f.LogResponse(l.LogInfo, r, ww, l.Config, startTime, dw.Body.String(), resLogFields, single)
+				}
+			}()
+			return next(c)
+		}
+		return nil
 	}
 }
 
-func (w ResponseWriter) Write(b []byte) (int, error) {
-	w.Body.Write(b)
-	return w.ResponseWriter.Write(b)
-}
+func (l *EchoLogger) BuildContextWithMask(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		ctxEcho := c
+		var ctx context.Context
+		ctx = c.Request().Context()
+		if fieldConfig.Constants != nil && len(fieldConfig.Constants) > 0 {
+			for k, e := range fieldConfig.Constants {
+				if len(e) > 0 {
+					ctx = context.WithValue(ctx, k, e)
+				}
+			}
+		}
 
-func NewResponseWriter(rw http.ResponseWriter) *ResponseWriter {
-	return &ResponseWriter{Body: bytes.NewBufferString(""), ResponseWriter: rw}
+		r := c.Request()
+		if fieldConfig.Map != nil && len(fieldConfig.Map) > 0 && r.Body != nil && (r.Method != "GET" || r.Method != "DELETE") {
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(r.Body)
+			r.Body = ioutil.NopCloser(buf)
+			var v interface{}
+			er2 := json.NewDecoder(strings.NewReader(buf.String())).Decode(&v)
+			if er2 != nil {
+				if len(fieldConfig.Ip) == 0 && fieldConfig.Constants == nil {
+					next(c)
+				} else {
+					ctxEcho.Request().WithContext(ctx)
+					next(ctxEcho)
+				}
+			} else {
+				m, ok := v.(map[string]interface{})
+				if !ok {
+					if len(fieldConfig.Ip) == 0 && fieldConfig.Constants == nil {
+						return next(c)
+					} else {
+						ctxEcho.Request().WithContext(ctx)
+						return next(ctxEcho)
+					}
+				} else {
+					for k, e := range fieldConfig.Map {
+						if strings.Index(e, ".") >= 0 {
+							v3 := ValueOf(v, e)
+							if v3 != nil {
+								s3, ok3 := v3.(string)
+								if ok3 {
+									if len(s3) > 0 {
+										if l.Mask != nil && fieldConfig.Masks != nil && len(fieldConfig.Masks) > 0 {
+											if Include(fieldConfig.Masks, k) {
+												ctx = context.WithValue(ctx, k, l.Mask(k, s3))
+											} else {
+												ctx = context.WithValue(ctx, k, s3)
+											}
+										} else {
+											ctx = context.WithValue(ctx, k, s3)
+										}
+									}
+								} else {
+									ctx = context.WithValue(ctx, k, s3)
+								}
+							}
+						} else {
+							x, ok2 := m[e]
+							if ok2 && x != nil {
+								s3, ok3 := x.(string)
+								if ok3 {
+									if len(s3) > 0 {
+										if l.Mask != nil && fieldConfig.Masks != nil && len(fieldConfig.Masks) > 0 {
+											if Include(fieldConfig.Masks, k) {
+												ctx = context.WithValue(ctx, k, l.Mask(k, s3))
+											} else {
+												ctx = context.WithValue(ctx, k, s3)
+											}
+										} else {
+											ctx = context.WithValue(ctx, k, s3)
+										}
+									}
+								} else {
+									ctx = context.WithValue(ctx, k, s3)
+								}
+							}
+						}
+					}
+					ctxEcho.SetRequest(c.Request().WithContext(ctx))
+					return next(ctxEcho)
+				}
+			}
+		} else {
+			if len(fieldConfig.Ip) == 0 && fieldConfig.Constants == nil {
+				return next(c)
+			} else {
+				ctxEcho.SetRequest(c.Request().WithContext(ctx))
+				return next(ctxEcho)
+			}
+		}
+		return nil
+	}
 }

@@ -4,33 +4,42 @@ import (
 	"context"
 
 	"github.com/core-go/config"
+	sv "github.com/core-go/core"
 	"github.com/core-go/log"
-	sv "github.com/core-go/service"
+	"github.com/core-go/log/strings"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
 	"go-service/internal/app"
-	lg "go-service/pkg/log"
+	mid "go-service/pkg/log"
 )
 
 func main() {
 	var conf app.Config
-	er1 := config.Load(&conf, "configs/config")
-	if er1 != nil {
-		panic(er1)
+	err := config.Load(&conf, "configs/config")
+	if err != nil {
+		panic(err)
 	}
 
 	e := echo.New()
-
 	log.Initialize(conf.Log)
-	// logger := lg.NewLogger(conf.MiddleWare, log.InfoFields)
-	// e.Use(middleware.BodyDump(logger.Log))
-	e.Use(lg.LoggerEcho)
+	echoLogger := mid.NewEchoLogger(conf.MiddleWare, log.InfoFields, MaskLog)
+
+	e.Use(echoLogger.BuildContextWithMask)
+	e.Use(echoLogger.Logger)
 	e.Use(middleware.Recover())
 
-	er2 := app.Route(e, context.Background(), conf)
-	if er2 != nil {
-		panic(er2)
+	err = app.Route(e, context.Background(), conf)
+	if err != nil {
+		panic(err)
 	}
 	e.Logger.Fatal(e.Start(sv.Addr(conf.Server.Port)))
+}
+
+func MaskLog(name, s string) string {
+	if name == "mobileNo" {
+		return strings.Mask(s, 2, 2, "x")
+	} else {
+		return strings.Mask(s, 0, 5, "x")
+	}
 }

@@ -1,5 +1,5 @@
 server:
-  name: go-sql-rest-api
+  name: go-echo-sql-tutorial
   port: 8080
 
 sql:
@@ -12,9 +12,27 @@ log:
     time: "@timestamp"
     msg: message
 
+log:
+  level: debug
+  fields: appId,service,mobileNo,creditCard,corrId
+  map:
+    time: "@timestamp"
+    msg: message
+
 middleware:
   log: true
   skips: /health
   request: request
   response: response
+  duration: duration
   size: size
+  masks: mobileNo,creditCard
+  constants:
+    app_id: "789"
+    service: promtpay
+  map:
+    mobile_no: header.mobileNo
+    credit_card: header.creditCard
+    corr_id: header.corrId
+    email: body.email
+    username: body.username
