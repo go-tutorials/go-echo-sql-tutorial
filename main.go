@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"github.com/core-go/config"
-	sv "github.com/core-go/core"
-	"github.com/core-go/log"
-	"github.com/core-go/log/strings"
+	"github.com/core-go/core"
+	"github.com/core-go/core/log"
+	mid "github.com/core-go/core/middleware/echo"
+	"github.com/core-go/core/strings"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
 	"go-service/internal/app"
-	mid "go-service/pkg/log"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	e.Logger.Fatal(e.Start(sv.Addr(conf.Server.Port)))
+	e.Logger.Fatal(e.Start(core.Addr(conf.Server.Port)))
 }
 
 func MaskLog(name, s string) string {
