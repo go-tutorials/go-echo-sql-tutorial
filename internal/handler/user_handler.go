@@ -81,6 +81,24 @@ func (h *UserHandler) Update(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, res)
 }
+func (h *UserHandler) UpdateReq(c echo.Context) error {
+	var user UpdateReq
+	er1 := c.Bind(&user)
+	defer c.Request().Body.Close()
+
+	if er1 != nil {
+		return c.String(http.StatusInternalServerError, er1.Error())
+	}
+
+	res, er2 := h.service.Update(c.Request().Context(), user.Body)
+	if er2 != nil {
+		return c.String(http.StatusInternalServerError, er2.Error())
+	}
+	resObj := &UpdateRes{}
+	resObj.Header = BuildResponseHeader(user.Header, nil)
+	resObj.Body = &ResBody{Res: res}
+	return c.JSON(http.StatusOK, res)
+}
 
 func (h *UserHandler) Patch(c echo.Context) error {
 	id := c.Param("id")

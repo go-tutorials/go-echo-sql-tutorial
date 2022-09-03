@@ -5,6 +5,7 @@ import (
 
 	"github.com/core-go/config"
 	"github.com/core-go/core"
+	"github.com/core-go/core/convert"
 	"github.com/core-go/core/log"
 	mid "github.com/core-go/core/middleware/echo"
 	"github.com/core-go/core/strings"
@@ -20,6 +21,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	conf.MiddleWare.Constants = convert.ToCamelCase(conf.MiddleWare.Constants)
+	conf.MiddleWare.Map = convert.ToCamelCase(conf.MiddleWare.Map)
 
 	e := echo.New()
 	log.Initialize(conf.Log)

@@ -18,6 +18,7 @@ func Route(e *echo.Echo, ctx context.Context, config Config) error {
 	e.GET(userPath+"/:id", app.UserHandler.Load)
 	e.POST(userPath, app.UserHandler.Insert)
 	e.PUT(userPath+"/:id", app.UserHandler.Update)
+	e.POST(userPath+"/update", app.UserHandler.UpdateReq)
 	e.PATCH(userPath+"/:id", app.UserHandler.Patch)
 	e.DELETE(userPath+"/:id", app.UserHandler.Delete)
 
