@@ -7,12 +7,6 @@ sql:
   data_source_name: postgres://qtqyqrzg:4-fPQ7h10SZk3d6_AkaxSGZ5AjZ6RdWO@satao.db.elephantsql.com/qtqyqrzg
 
 log:
-  level: info
-  map:
-    time: "@timestamp"
-    msg: message
-
-log:
   level: debug
   fields: appId,service,mobileNo,creditCard,corrId
   map:
@@ -28,8 +22,8 @@ middleware:
   size: size
   masks: mobileNo,creditCard
   constants:
-    app_id: "789"
-    service: promtpay
+    app_id: "123"
+    service: payment
   map:
     mobile_no: header.mobileNo
     credit_card: header.creditCard
