@@ -1,0 +1,58 @@
+[
+    {
+        "id": "spiderman",
+        "username": "peter.parker",
+        "email": "0987654321",
+        "phone": "peter.parker@gmail.com",
+        "dateOfBirth": "1962-08-25T00:00:00Z"
+    },
+    {
+        "id": "deadpool",
+        "username": "dead.pool",
+        "email": "0987654321",
+        "phone": "dead.pool@gmail.com",
+        "dateOfBirth": "1985-11-16T00:00:00Z"
+    },
+    {
+        "id": "ironman",
+        "username": "robert.downey.Jr",
+        "email": "0123456111",
+        "phone": "rob.downey.Jr@gmail.com",
+        "dateOfBirth": "1965-03-25T00:00:00Z"
+    },
+    {
+        "id": "catwoman",
+        "username": "dead.pool",
+        "email": "0987654321",
+        "phone": "dead.pool@gmail.com",
+        "dateOfBirth": "1985-11-16T00:00:00Z"
+    },
+    {
+        "id": "deadshot",
+        "username": "dead.shot",
+        "email": "0987654321",
+        "phone": "dead.shot@gmail.com",
+        "dateOfBirth": "1985-11-16T00:00:00Z"
+    },
+    {
+        "id": "harley quinn",
+        "username": "harley.shot",
+        "email": "0987654321",
+        "phone": "harley.shot@gmail.com",
+        "dateOfBirth": "1985-11-16T00:00:00Z"
+    },
+    {
+        "id": "kingshark",
+        "username": "kingshark.noamnoam",
+        "email": "0987654321",
+        "phone": "kingshark@gmail.com",
+        "dateOfBirth": "1985-11-16T00:00:00Z"
+    },
+    {
+        "id": "wolverine",
+        "username": "james.howlett",
+        "email": "0987654321",
+        "phone": "james.howlett@gmail.com",
+        "dateOfBirth": "1974-11-16T00:00:00Z"
+    }
+]

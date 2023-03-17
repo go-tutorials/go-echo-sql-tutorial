@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"github.com/core-go/config"
 	"github.com/core-go/core"
+	"github.com/core-go/core/config"
 	"github.com/core-go/core/log"
 	mid "github.com/core-go/core/middleware/echo"
 	"github.com/core-go/core/strings"
