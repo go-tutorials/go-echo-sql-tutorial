@@ -1,10 +1,10 @@
 # go-echo-postgresql-rest-api
-an restful api service built with golang + echo framework + elephantSQL (postgresql cloud db)
+a restful api service built with golang + echo framework + elephantSQL (postgresql cloud db)
 
 ## How to run
 #### Clone the repository
 ```shell
-git clone https://github.com/go-tutorials/go-echo-postgresql-rest-api.git
+git clone https://github.com/go-tutorials/go-echo-sql-tutorial.git
 ```
 
 #### To run the application
@@ -169,12 +169,12 @@ To handler routing
     e.GET("/health", app.HealthHandler.Check)
 ```
 
-### core-go/config
+### core-go/core/config
 To load the config from "config.yml", in "configs" folder
 ```go
 package main
 
-import "github.com/core-go/config"
+import "github.com/core-go/core/config"
 
 type Root struct {
     DB DatabaseConfig `mapstructure:"db"`
