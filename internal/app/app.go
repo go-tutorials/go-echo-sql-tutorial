@@ -12,8 +12,8 @@ import (
 )
 
 type ApplicationContext struct {
-	HealthHandler *echo.Handler
-	UserHandler   *handler.UserHandler
+	Health  *echo.Handler
+	Handler *handler.UserHandler
 }
 
 func NewApp(ctx context.Context, config Config) (*ApplicationContext, error) {
@@ -29,7 +29,7 @@ func NewApp(ctx context.Context, config Config) (*ApplicationContext, error) {
 	healthHandler := echo.NewHandler(sqlChecker)
 
 	return &ApplicationContext{
-		HealthHandler: healthHandler,
-		UserHandler:   userHandler,
+		Health:  healthHandler,
+		Handler: userHandler,
 	}, nil
 }

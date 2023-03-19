@@ -11,15 +11,15 @@ func Route(e *echo.Echo, ctx context.Context, config Config) error {
 		return err
 	}
 
-	e.GET("/health", app.HealthHandler.Check)
+	e.GET("/health", app.Health.Check)
 
 	userPath := "/users"
-	e.GET(userPath, app.UserHandler.GetAll)
-	e.GET(userPath+"/:id", app.UserHandler.Load)
-	e.POST(userPath, app.UserHandler.Insert)
-	e.PUT(userPath+"/:id", app.UserHandler.Update)
-	e.PATCH(userPath+"/:id", app.UserHandler.Patch)
-	e.DELETE(userPath+"/:id", app.UserHandler.Delete)
+	e.GET(userPath, app.Handler.GetAll)
+	e.GET(userPath+"/:id", app.Handler.Load)
+	e.POST(userPath, app.Handler.Insert)
+	e.PUT(userPath+"/:id", app.Handler.Update)
+	e.PATCH(userPath+"/:id", app.Handler.Patch)
+	e.DELETE(userPath+"/:id", app.Handler.Delete)
 
 	return nil
 }
