@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Route(e *echo.Echo, ctx context.Context, config Config) error {
+func Route(ctx context.Context, e *echo.Echo, config Config) error {
 	app, err := NewApp(ctx, config)
 	if err != nil {
 		return err

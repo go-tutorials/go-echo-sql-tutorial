@@ -29,7 +29,7 @@ func main() {
 	e.Use(echoLogger.Logger)
 	e.Use(middleware.Recover())
 
-	err = app.Route(e, context.Background(), conf)
+	err = app.Route(context.Background(), e, conf)
 	if err != nil {
 		panic(err)
 	}
