@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
+	"github.com/core-go/config"
 	"github.com/core-go/core"
-	"github.com/core-go/core/config"
 	"github.com/core-go/core/log"
 	mid "github.com/core-go/core/middleware/echo"
 	"github.com/core-go/core/strings"
@@ -15,25 +15,25 @@ import (
 )
 
 func main() {
-	var conf app.Config
-	err := config.Load(&conf, "configs/config")
+	var cfg app.Config
+	err := config.Load(&cfg, "configs/config")
 	if err != nil {
 		panic(err)
 	}
 
 	e := echo.New()
-	log.Initialize(conf.Log)
-	echoLogger := mid.NewEchoLogger(conf.MiddleWare, log.InfoFields, MaskLog)
+	log.Initialize(cfg.Log)
+	echoLogger := mid.NewEchoLogger(cfg.MiddleWare, log.InfoFields, MaskLog)
 
 	e.Use(echoLogger.BuildContextWithMask)
 	e.Use(echoLogger.Logger)
 	e.Use(middleware.Recover())
 
-	err = app.Route(context.Background(), e, conf)
+	err = app.Route(context.Background(), e, cfg)
 	if err != nil {
 		panic(err)
 	}
-	e.Logger.Fatal(e.Start(core.Addr(conf.Server.Port)))
+	e.Logger.Fatal(e.Start(core.Addr(cfg.Server.Port)))
 }
 
 func MaskLog(name, s string) string {
