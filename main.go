@@ -5,11 +5,12 @@ import (
 
 	"github.com/core-go/config"
 	"github.com/core-go/core"
-	"github.com/core-go/core/log"
-	mid "github.com/core-go/core/middleware/echo"
 	"github.com/core-go/core/strings"
+	"github.com/core-go/log"
+	mid "github.com/core-go/log/echo"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	_ "github.com/lib/pq"
 
 	"go-service/internal/app"
 )
@@ -23,7 +24,8 @@ func main() {
 
 	e := echo.New()
 	log.Initialize(cfg.Log)
-	echoLogger := mid.NewEchoLogger(cfg.MiddleWare, log.InfoFields, MaskLog)
+	logger := mid.NewMaskLogger(Mask, Mask)
+	echoLogger := mid.NewEchoLogger(cfg.MiddleWare, log.InfoFields, logger, MaskLog)
 
 	e.Use(echoLogger.BuildContextWithMask)
 	e.Use(echoLogger.Logger)
@@ -42,4 +44,13 @@ func MaskLog(name, s string) string {
 	} else {
 		return strings.Mask(s, 0, 5, "x")
 	}
+}
+func Mask(name string, v interface{}) interface{}  {
+	if name == "phone" {
+		s, ok := v.(string)
+		if ok {
+			return strings.Mask(s, 0, 3, "*")
+		}
+	}
+	return v
 }

@@ -2,10 +2,10 @@ package app
 
 import (
 	"context"
+
 	"github.com/core-go/health/echo"
 	s "github.com/core-go/health/sql"
 	"github.com/core-go/sql"
-	_ "github.com/lib/pq"
 
 	"go-service/internal/handler"
 	"go-service/internal/service"

@@ -2,8 +2,8 @@ package app
 
 import (
 	"github.com/core-go/core"
-	"github.com/core-go/core/log"
-	l "github.com/core-go/core/middleware/echo"
+	"github.com/core-go/log"
+	l "github.com/core-go/log/echo"
 	"github.com/core-go/sql"
 )
 
