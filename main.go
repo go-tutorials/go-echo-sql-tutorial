@@ -45,12 +45,12 @@ func MaskLog(name, s string) string {
 		return strings.Mask(s, 0, 5, "x")
 	}
 }
-func Mask(name string, v interface{}) interface{}  {
-	if name == "phone" {
-		s, ok := v.(string)
-		if ok {
-			return strings.Mask(s, 0, 3, "*")
+func Mask(obj map[string]interface{}){
+	v, ok := obj["phone"]
+	if ok {
+		s, ok2 := v.(string)
+		if ok2 && len(s) > 3 {
+			obj["phone"] = strings.Mask(s, 0, 3, "*")
 		}
 	}
-	return v
 }

@@ -652,12 +652,12 @@ github.com/cncf/xds/go v0.0.0-20230105202645-06c439db220b/go.mod h1:eXthEFrGJvWH
 github.com/cncf/xds/go v0.0.0-20230310173818-32f1caf87195/go.mod h1:eXthEFrGJvWHgFFCl3hGmgk+/aYT6PnTQLykKQRLhEs=
 github.com/core-go/config v1.0.1 h1:ZIfpd+rfyajyePVxe7IKwGtgcJZ7lsbewTzVgfgMZMk=
 github.com/core-go/config v1.0.1/go.mod h1:fHfbCGBNq6FMQneRMtDg8tkTwut3KmmYxcjgbW37+As=
-github.com/core-go/core v0.6.3 h1:QGf9QaBQyipiQubRJlqV3UN0chi9dKONP8COEBEyxR8=
-github.com/core-go/core v0.6.3/go.mod h1:bfN1xcZGpu0cnA6qhv/JyTkFHnk9IJgqd/JnevDxGkA=
+github.com/core-go/core v0.6.4 h1:7JCw0avnBBByS07lXPq1ffYVP50MLX9wyKY7r+0lmpE=
+github.com/core-go/core v0.6.4/go.mod h1:bfN1xcZGpu0cnA6qhv/JyTkFHnk9IJgqd/JnevDxGkA=
 github.com/core-go/health v1.0.0 h1:mHBd8iQtGC1FqfUBGT3AgsJL/16j+QAJ9S0J3OjYzTg=
 github.com/core-go/health v1.0.0/go.mod h1:7J9YQqCPSZW5+5BLVtZPQ/FULyk+LHZgSTnWFdL+oP0=
-github.com/core-go/log v1.0.1 h1:S9I7HWeDBK3hNXOtEavRulDp7D7uYWKbjwAYdrKOvJk=
-github.com/core-go/log v1.0.1/go.mod h1:nLtakp+tnvjYestj7RVMXHnZ3GMfMpeZvl9Gzo7xz6o=
+github.com/core-go/log v1.0.2 h1:6ocWeqZELb+Fy/5pGWwjBoAeWwK06wN0FmT9f9/brrc=
+github.com/core-go/log v1.0.2/go.mod h1:nLtakp+tnvjYestj7RVMXHnZ3GMfMpeZvl9Gzo7xz6o=
 github.com/core-go/sql v0.5.8 h1:iHCvRWaW3/YgVwhWYJW/EjtkyVxXzWtMPZijXJFEVJE=
 github.com/core-go/sql v0.5.8/go.mod h1:8hRTaaPVqey2TKPhKQyG/Gc1MVB5o2WcsslleHqPAGw=
 github.com/coreos/go-semver v0.3.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
