@@ -24,7 +24,7 @@ func main() {
 
 	e := echo.New()
 	log.Initialize(cfg.Log)
-	logger := mid.NewMaskLogger(Mask, Mask)
+	logger := mid.NewMaskLogger(cfg.MiddleWare.Request, Mask, Mask)
 	echoLogger := mid.NewEchoLogger(cfg.MiddleWare, log.InfoFields, logger, MaskLog)
 
 	e.Use(echoLogger.BuildContextWithMask)
@@ -45,7 +45,7 @@ func MaskLog(name, s string) string {
 		return strings.Mask(s, 0, 5, "x")
 	}
 }
-func Mask(obj map[string]interface{}){
+func Mask(obj map[string]interface{}) {
 	v, ok := obj["phone"]
 	if ok {
 		s, ok2 := v.(string)
