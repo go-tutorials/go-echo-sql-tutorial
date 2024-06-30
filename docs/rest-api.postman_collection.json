@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "8867791e-12fa-4296-b479-f64c73e8a630",
+		"_postman_id": "4a97ee38-5023-41f7-a199-bb8efc936f1a",
 		"name": "rest-api",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17364528"
 	},
 	"item": [
 		{
@@ -15,9 +16,9 @@
 				"header": [
 					{
 						"key": "Content-Type",
+						"value": "application/json",
 						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
+						"type": "text"
 					}
 				],
 				"body": {
@@ -44,6 +45,105 @@
 			"response": []
 		},
 		{
+			"name": "search users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"name": "Content-Type",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/search?page=1&limit=2&email=james&dateOfBirth.min=1974-11-15T17:00:00.000Z&dateOfBirth.max=1976-11-15T17:00:00.000Z&sort=phone,-id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"search"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "2"
+						},
+						{
+							"key": "email",
+							"value": "james"
+						},
+						{
+							"key": "dateOfBirth.min",
+							"value": "1974-11-15T17:00:00.000Z"
+						},
+						{
+							"key": "dateOfBirth.max",
+							"value": "1976-11-15T17:00:00.000Z"
+						},
+						{
+							"key": "sort",
+							"value": "phone,-id"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search users",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"page\": 1,\n    \"limit\": 20,\n    \"username\": \"james.howlett\",\n    \"fields\": [\"id\", \"username\"],\n    \"dateOfBirth\": {\n        \"min\": \"1974-11-15T17:00:00.000Z\",\n        \"max\": \"1976-11-15T17:00:00.000Z\"\n    },\n    \"sort\": \"username\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "get all users",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -53,9 +153,9 @@
 				"header": [
 					{
 						"key": "Content-Type",
+						"value": "application/json",
 						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
+						"type": "text"
 					}
 				],
 				"body": {
@@ -91,9 +191,13 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Correlation-Id",
+						"value": "INoxoPGvyLnQsiLN",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -127,9 +231,13 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Correlation-Id",
+						"value": "INoxoPGvyLnQsiLN",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -162,9 +270,13 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Correlation-Id",
+						"value": "INoxoPGvyLnQsiLN",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -198,9 +310,13 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Correlation-Id",
+						"value": "INoxoPGvyLnQsiLN",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -234,9 +350,13 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Correlation-Id",
+						"value": "INoxoPGvyLnQsiLN",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -263,6 +383,5 @@
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
