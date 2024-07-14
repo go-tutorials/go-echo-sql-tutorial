@@ -2,10 +2,10 @@ package app
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/core-go/health/echo"
 	s "github.com/core-go/health/sql"
-	"github.com/core-go/sql"
 
 	"go-service/internal/handler"
 	"go-service/internal/service"
@@ -17,7 +17,7 @@ type ApplicationContext struct {
 }
 
 func NewApp(ctx context.Context, cfg Config) (*ApplicationContext, error) {
-	db, err := sql.OpenByConfig(cfg.Sql)
+	db, err := sql.Open(cfg.Sql.Driver, cfg.Sql.DataSourceName)
 	if err != nil {
 		return nil, err
 	}

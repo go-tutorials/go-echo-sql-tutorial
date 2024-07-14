@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/core-go/config"
-	"github.com/core-go/core"
+	svr "github.com/core-go/core/server"
 	"github.com/core-go/core/strings"
-	"github.com/core-go/log"
 	mid "github.com/core-go/log/echo"
+	"github.com/core-go/log/zap"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
@@ -35,7 +35,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	e.Logger.Fatal(e.Start(core.Addr(cfg.Server.Port)))
+	e.Logger.Fatal(e.Start(svr.Addr(cfg.Server.Port)))
 }
 
 func MaskLog(name, s string) string {
